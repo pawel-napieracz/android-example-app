@@ -22,9 +22,9 @@ import com.onegini.mobile.sdk.android.model.OneginiClientConfigModel;
 @SuppressWarnings("unused")
 public class OneginiConfigModel implements OneginiClientConfigModel {
 
-  private final String appIdentifier = "ExampleApp";
+  private final String appIdentifier = "PenTest";
   private final String appPlatform = "android";
-  private final String redirectionUri = "oneginiexample://loginsuccess";
+  private final String redirectionUri = "pentest://redirect";
   private final String appVersion = "2.3.0";
   private final String baseURL = "https://demo-msp.onegini.com";
   private final String resourceBaseURL = "https://demo-msp.onegini.com/resources";

@@ -55,7 +55,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:scheme="oneginiexample"/>
+                <data android:scheme="pentest"/>
             </intent-filter>
         </activity>
         <activity
