@@ -16,6 +16,7 @@
 
 -printmapping build/obfuscation-mapping.map
 -printseeds build/seeds.txt
+-keepattributes Signature,InnerClasses,EnclosingMethod
 
 -dontwarn retrofit.**
 -dontwarn retrofit2.**
@@ -27,7 +28,7 @@
 -dontwarn rx.*
 
 -keep class com.onegini.mobile.sdk.android.library.internal.* { *; }
--keep class * implements com.onegini.mobile.sdk.android.library.model.OneginiClientConfigModel { *; }
+-keep class * implements com.onegini.mobile.sdk.android.model.OneginiClientConfigModel { *; }
 
 -keep interface retrofit.** { *; }
 -keep class retrofit.** { *; }
@@ -44,4 +45,24 @@
     @retrofit2.http.* <methods>;
 }
 
--keepattributes Signature,InnerClasses,EnclosingMethod
+
+# Okhttp 3
+-dontwarn okhttp3.**
+
+# ButterKnife 7
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+# Rx java
+-dontwarn sun.misc.Unsafe
+-dontwarn java.lang.invoke.*
+
+# Smasung FIDO
+-dontwarn com.samsung.sds.**
