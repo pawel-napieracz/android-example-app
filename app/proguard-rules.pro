@@ -66,3 +66,18 @@
 
 # Smasung FIDO
 -dontwarn com.samsung.sds.**
+
+
+-keep class net.sqlcipher.**
+-keep class net.sqlcipher.database.SQLiteDatabaser.** # redundant
+-keep public class net.sqlcipher.** # redundant
+-keep class net.sqlcipher.** { *; } # redundant
+-keep interface net.sqlcipher.** { *; }
+
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keepclasseswithmembernames,includedescriptorclasses class * {
+    native <methods>;
+}
