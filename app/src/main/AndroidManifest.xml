@@ -51,6 +51,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data android:scheme="oneginiexample"/>
+                <data android:scheme="oneginigooglesigninexample"/>
             </intent-filter>
         </activity>
         <activity
