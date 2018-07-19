@@ -15,6 +15,7 @@
   -->
 
 <resources>
+    <string name="server_client_id">325706516339-5nolqep6u5lm8f6m3vs771a87i0mo4gk.apps.googleusercontent.com</string>
     <string name="app_name">Example App</string>
     <string name="btn_login_label">LOG IN</string>
     <string name="btn_login_with_label">LOG IN WITH...</string>
