@@ -81,12 +81,17 @@ public class RegistrationActivity extends Activity {
 
   public static final String IDENTITY_PROVIDER_EXTRA = "identity_provider_id";
 
+  private static final String STATE_QUERY_PARAM = "state";
+  private static final String REDIRECT_URI_QUERY_PARAM = "redirect_uri";
+  private static final String CODE_QUERY_PARAM = "code";
+  private static final String GOOGLE_ACCOUNT_HOST = "accounts.google.com";
+
   private UserProfile registeredProfile;
 
   private GoogleSignInClient googleSignInClient;
   private static final int RC_SIGN_IN = 9003;
-  private static String googleSignInState ;//awful but quick :)
-  private static String googleSignInRedirectUri ;//awful but quick :)
+  private static String googleSignInState;
+  private static String googleSignInRedirectUri;
 
   final OneginiRegistrationHandler registrationHandler = new OneginiRegistrationHandler() {
 
@@ -145,14 +150,13 @@ public class RegistrationActivity extends Activity {
     if (redirectUri.startsWith(uri.getScheme())) {
       RegistrationRequestHandler.handleRegistrationCallback(uri);
     }
-    if ("accounts.google.com".equals(uri.getHost())) {
-      googleSignInState = uri.getQueryParameter("state");
-      googleSignInRedirectUri = uri.getQueryParameter("redirect_uri");
+    if (GOOGLE_ACCOUNT_HOST.equals(uri.getHost())) {
+      googleSignInState = uri.getQueryParameter(STATE_QUERY_PARAM);
+      googleSignInRedirectUri = uri.getQueryParameter(REDIRECT_URI_QUERY_PARAM);
 
       Intent signInIntent = googleSignInClient.getSignInIntent();
       startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-
   }
 
   @Override
@@ -168,18 +172,20 @@ public class RegistrationActivity extends Activity {
   private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
     try {
       GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-      String code = account.getServerAuthCode();
-      // Signed in successfully
-      runSuccessCallback(googleSignInRedirectUri, googleSignInState, code);
+      runSuccessCallback(googleSignInRedirectUri, googleSignInState, account.getServerAuthCode());
     } catch (ApiException e) {
-      // The ApiException status code indicates the detailed failure reason.
-      // Please refer to the GoogleSignInStatusCodes class reference for more information.
       System.err.println("signInResult:failed code=" + e.getStatusCode());
     }
   }
 
   private void runSuccessCallback(String callbackUrl, String state, String code) {
-    Uri uri = Uri.parse(callbackUrl).buildUpon().appendQueryParameter("state", state).appendQueryParameter("code", code).build();
+    Uri uri = Uri.parse(callbackUrl)
+        .buildUpon()
+        .appendQueryParameter(STATE_QUERY_PARAM, state)
+        .appendQueryParameter(CODE_QUERY_PARAM, code)
+        .build();
+
+    //open callbackUrl in browser
     final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
