@@ -35,8 +35,9 @@ If you ignore this step, you won't be able to receive push messages from the Tok
 
 In order to use native Google Sign-In component please ensure you have properly configured Web browser Google Sign-In.
 To make SDK working with example app you have to made this steps:
-1. Authenticate your application by adding your release/debug signing key (SHA1) in https://console.cloud.google.com/apis/credentials
+1. Authenticate your application by adding your release/debug signing key (SHA1) in [Credentials Console](https://console.cloud.google.com/apis/credentials).
 2. Add a client_id that you used in Web browser login to string.xml file. Search for `string` tag with name `server_client_id`.
 3. Take a look at `AndroidManifest.xml` and search `<intent-filter>`. One of elements is responsible for catching `google account` URL. It's require to go back to application from opened browser.
 
-In case of any problem try to look at https://developers.google.com/identity/sign-in/android/start
+In case of any problem try to look at [Android Sign-In Documentation](https://developers.google.com/identity/sign-in/android/start)
+
