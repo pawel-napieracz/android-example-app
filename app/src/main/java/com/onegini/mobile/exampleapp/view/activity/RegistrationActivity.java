@@ -37,7 +37,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.onegini.mobile.exampleapp.Constants;
 import com.onegini.mobile.exampleapp.OneginiSDK;
@@ -82,7 +84,9 @@ public class RegistrationActivity extends Activity {
   private UserProfile registeredProfile;
 
   private GoogleSignInClient googleSignInClient;
-  private static final int RC_SIGN_IN = 233341;
+  private static final int RC_SIGN_IN = 9003;
+  private static String googleSignInState ;//awful but quick :)
+  private static String googleSignInRedirectUri ;//awful but quick :)
 
   final OneginiRegistrationHandler registrationHandler = new OneginiRegistrationHandler() {
 
@@ -108,11 +112,11 @@ public class RegistrationActivity extends Activity {
     setupUserInterface();
     final OneginiIdentityProvider oneginiIdentityProvider = getIntent().getParcelableExtra(IDENTITY_PROVIDER_EXTRA);
     registerUser(oneginiIdentityProvider);
-    System.out.println("@@@@@@@@@test ");
 
     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build();
+        .requestScopes(new Scope(Scopes.PROFILE))
+        .requestServerAuthCode(getString(R.string.server_client_id))
+        .build();
     googleSignInClient = GoogleSignIn.getClient(this, gso);
   }
 
@@ -142,9 +146,11 @@ public class RegistrationActivity extends Activity {
       RegistrationRequestHandler.handleRegistrationCallback(uri);
     }
     if ("accounts.google.com".equals(uri.getHost())) {
+      googleSignInState = uri.getQueryParameter("state");
+      googleSignInRedirectUri = uri.getQueryParameter("redirect_uri");
+
       Intent signInIntent = googleSignInClient.getSignInIntent();
       startActivityForResult(signInIntent, RC_SIGN_IN);
-      System.out.println("@@@@@@@@@trestsets " + uri.getQuery());
     }
 
   }
@@ -162,14 +168,22 @@ public class RegistrationActivity extends Activity {
   private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
     try {
       GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-      // Signed in successfully, show authenticated UI.
-      System.out.println("@@@@@ registered " + account.getDisplayName() + " " + account.getEmail());
+      String code = account.getServerAuthCode();
+      // Signed in successfully
+      runSuccessCallback(googleSignInRedirectUri, googleSignInState, code);
     } catch (ApiException e) {
       // The ApiException status code indicates the detailed failure reason.
       // Please refer to the GoogleSignInStatusCodes class reference for more information.
       System.err.println("signInResult:failed code=" + e.getStatusCode());
     }
+  }
+
+  private void runSuccessCallback(String callbackUrl, String state, String code) {
+    Uri uri = Uri.parse(callbackUrl).buildUpon().appendQueryParameter("state", state).appendQueryParameter("code", code).build();
+    final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    startActivity(intent);
   }
 
   private void registerUser(final OneginiIdentityProvider identityProvider) {
